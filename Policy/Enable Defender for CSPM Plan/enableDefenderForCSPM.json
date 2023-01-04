@@ -1,0 +1,87 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Resources/subscriptions"
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "type": "Microsoft.Security/pricings",
+        "name": "CloudPosture",
+        "deploymentScope": "subscription",
+        "existenceScope": "subscription",
+        "roleDefinitionIds": [
+          "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+        ],
+        "existenceCondition": {
+          "field": "Microsoft.Security/pricings/pricingTier",
+          "equals": "[parameters('pricingTier')]"
+        },
+        "deployment": {
+          "location": "westeurope",
+          "properties": {
+            "mode": "incremental",
+            "parameters": {
+              "pricingTier": {
+                "value": "[parameters('pricingTier')]"
+              }
+            },
+            "template": {
+              "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              "contentVersion": "1.0.0.0",
+              "parameters": {
+                "pricingTier": {
+                  "type": "string"
+                }
+              },
+              "variables": {},
+              "resources": [
+                {
+                  "type": "Microsoft.Security/pricings",
+                  "apiVersion": "2022-03-01",
+                  "name": "CloudPosture",
+                  "properties": {
+                    "pricingTier": "[parameters('pricingTier')]"
+                  }
+                }
+              ],
+              "outputs": {}
+            }
+          }
+        }
+      }
+    }
+  },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      "defaultValue": "DeployIfNotExists"
+    },
+    "pricingTier": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Pricing Tier",
+        "description": "Select the Pricing Tier, free or standard"
+      },
+      "allowedValues": [
+        "Free",
+        "Standard"
+      ],
+      "defaultValue": "Standard"
+    }
+  }
+}
